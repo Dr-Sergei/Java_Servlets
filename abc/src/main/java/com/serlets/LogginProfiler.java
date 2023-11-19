@@ -8,8 +8,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
+
+import com.abc.dao.DAO;
+import com.abc.entity.User;
 
 public class LogginProfiler extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -22,11 +26,10 @@ public class LogginProfiler extends HttpServlet {
 
 //HttpServletRequest: nimmt Daten von HTTP_request    
 
-	protected void doGet(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		jakarta.servlet.RequestDispatcher dispatcher = req.getRequestDispatcher("login.jsp");
 		dispatcher.forward(req, res);
-		
+
 	}
 
 	/**
@@ -36,24 +39,29 @@ public class LogginProfiler extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String username =request.getParameter("username");
+		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		
-		String user = "wsergei85";
-		String pw="222";
-		
-		if(user.equals(username)&& pw.equals(password)) {
-			request.setAttribute("user",user);
-			
+
+		List<User> users = DAO.userList;
+		boolean result = false;
+
+		for (User user : users) {
+
+			if (user.getName().equals(username) && user.getPassword().equals(password)) {
+				result = true;
+			}
+		}
+		if (result) {
+			request.setAttribute("user", username);
+
 			jakarta.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
 			dispatcher.forward(request, response);
-		}else {
+		} else {
 			jakarta.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("errorPasswordOrLogin.jsp");
 			dispatcher.forward(request, response);
-			
+
 		}
-		
-		
+
 		doGet(request, response);
 	}
 
